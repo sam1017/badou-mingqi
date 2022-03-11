@@ -18,13 +18,6 @@ import random
 import json
 import matplotlib.pyplot as plt
 
-"""
-
-基于pytorch的网络编写
-实现一个网络完成一个简单nlp任务
-判断文本中是否有某些特定字符出现
-
-"""
 
 class TorchModel(nn.Module):
     def __init__(self, vector_dim, sentence_length, hidden_size, vocab):
@@ -40,10 +33,8 @@ class TorchModel(nn.Module):
     def forward(self, x, y=None):
         x = self.embedding(x)                  #(batch_size, sen_len) -> (batch_size, sen_len, vector_dim)
         output, h_n = self.layer(x)            #output: (batch_size, sen_len, hidden_size)  h_n：(num_layers, batch_size, hidden_size)
-        print("output_shape:", output.shape)
         # output = h_n[-1,:,:]
         output = self.pool(output.transpose(1, 2)).squeeze()   #(batch_size, hidden_size)
-        print("output_pool_shape:", output.shape)
         output = self.classify(output)         #(batch_size, 1)
         y_pred = self.activation(output)                #(batch_size, 1) -> (batch_size, 1)
         if y is not None:
