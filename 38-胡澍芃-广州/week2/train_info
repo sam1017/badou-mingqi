@@ -1,0 +1,73 @@
+训练集 epoch 0:  loss_sum=312.8970276117325
+              precision    recall  f1-score   support
+
+      a or b       0.60      0.61      0.61      2822
+      c or d       0.32      0.44      0.37      2020
+      e or f       0.54      0.13      0.21      1357
+      others       0.56      0.60      0.58      2301
+
+    accuracy                           0.49      8500
+   macro avg       0.50      0.45      0.44      8500
+weighted avg       0.51      0.49      0.48      8500
+
+验证集 epoch 0:  loss_sum=34.296958565711975
+              precision    recall  f1-score   support
+
+      a or b       0.90      0.98      0.94       528
+      c or d       0.77      0.45      0.57       342
+      e or f       0.78      0.51      0.61       265
+      others       0.63      0.96      0.76       364
+
+    accuracy                           0.77      1499
+   macro avg       0.77      0.72      0.72      1499
+weighted avg       0.79      0.77      0.75      1499
+
+
+训练集 epoch 1:  loss_sum=103.82851452380419
+              precision    recall  f1-score   support
+
+      a or b       0.97      1.00      0.99      2822
+      c or d       0.93      0.74      0.82      2020
+      e or f       0.81      0.81      0.81      1357
+      others       0.85      0.98      0.91      2301
+
+    accuracy                           0.90      8500
+   macro avg       0.89      0.88      0.88      8500
+weighted avg       0.91      0.90      0.90      8500
+
+验证集 epoch 1:  loss_sum=7.3746215254068375
+  0%|          | 0/266 [00:00<?, ?it/s]              precision    recall  f1-score   support
+
+      a or b       0.99      1.00      1.00       528
+      c or d       0.99      0.94      0.97       342
+      e or f       0.94      0.98      0.96       265
+      others       0.99      1.00      0.99       364
+
+    accuracy                           0.98      1499
+   macro avg       0.98      0.98      0.98      1499
+weighted avg       0.98      0.98      0.98      1499
+
+
+训练集 epoch 2:  loss_sum=25.274551790207624
+              precision    recall  f1-score   support
+
+      a or b       1.00      1.00      1.00      2822
+      c or d       1.00      0.98      0.99      2020
+      e or f       0.97      0.99      0.98      1357
+      others       1.00      1.00      1.00      2301
+
+    accuracy                           0.99      8500
+   macro avg       0.99      0.99      0.99      8500
+weighted avg       0.99      0.99      0.99      8500
+
+验证集 epoch 2:  loss_sum=2.6097962260246277
+              precision    recall  f1-score   support
+
+      a or b       1.00      1.00      1.00       528
+      c or d       1.00      1.00      1.00       342
+      e or f       1.00      1.00      1.00       265
+      others       1.00      1.00      1.00       364
+
+    accuracy                           1.00      1499
+   macro avg       1.00      1.00      1.00      1499
+weighted avg       1.00      1.00      1.00      1499
