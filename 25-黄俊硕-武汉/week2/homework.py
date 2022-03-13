@@ -26,56 +26,31 @@ import matplotlib.pyplot as plt
 class TorchModel(nn.Module):
     def __init__(self, vector_dim, sentence_length, vocab):
         super(TorchModel, self).__init__()
-        self.hidden_dim = 30
+        self.hidden_dim = 32
         self.sentence_length = sentence_length
         self.embedding = nn.Embedding(len(vocab), vector_dim)  #embedding层
         self.pool = nn.AvgPool1d(sentence_length)   #池化层
-        # self.classify = nn.Linear(vector_dim, 1)     #线性层
         self.layer = nn.RNN(vector_dim, self.hidden_dim, bias=False, batch_first=True)
-        # self.layer = nn.RNN(vector_dim, vector_dim, bias=False, batch_first=True)
         self.linear = nn.Linear(self.hidden_dim, 1)
-        # self.classify = nn.Linear(vector_dim, 1)    #线性层
         self.activation = torch.sigmoid     #sigmoid归一化函数
         self.loss = nn.functional.mse_loss  #loss函数采用均方差损失
-        # self.loss = nn.functional.CrossEntropyLoss  #loss函数采用交叉熵
+
 
     #当输入真实标签，返回loss值；无真实标签，返回预测值
     def forward(self, x, y=None):
         print(x.shape)
-        x = self.embedding(x)                      #(batch_size, sen_len) -> (batch_size, sen_len, vector_dim)
-        # x = self.pool(x.transpose(1, 2)).squeeze() #(batch_size, sen_len, vector_dim) -> (batch_size, vector_dim)
-        # x = np.column_stack((x,  seq_len))
-        # x = x.transpose(1, 2)
-        # print(x.shape, "pool 后")
-        # x = x.detach().numpy()
-        # x = x.reshape((6,))
-        # x = torch.FloatTensor([x])
-        # x = x.view(-1, self.vector_dim)
-        # x = x.transpose(0, 1)
-        # print(x)
-        # print(x.shape)
-        # x = x.reshape((5, 4, 20))
-        # print(self.layer)
-        dp_layer = torch.nn.Dropout(0.5)
-        # x = dp_layer(x)
-        x, h = self.layer(x)                       #(batch_size, sen_len, vector_dim) -> (1, output_size, vector_dim)
-
-        # print(x.shape, "view 前 x")
-        print(h.shape, "view 前 h")
-        # x = x.reshape(-1, 30)
-        x = h.squeeze()
-        print(x.shape, "view 后 x")
-        x = dp_layer(x)
-        # x = self.pool(x.transpose(0, 1)).squeeze()
-        # print(x.shape, "pool 后 x")
-        x = self.linear(x)
-        # x = np.array(x)
-        # print(x.shape)
-        # x = torch.FloatTensor([x])
-        # print(x.shape, "linear 后 x")
-        # x = x.squeeze()
-        y_pred = self.activation(x)                #(batch_size, 1) -> (batch_size, 1)
-        # y_pred = y_pred.squeeze()
+        x = self.embedding(x)
+        print(self.layer)
+        dp_layer = torch.nn.Dropout(0.001)
+        ux, ht = self.layer(x)                       #(batch_size, sen_len, vector_dim) -> (1, output_size, vector_dim)
+        print(ht.shape, "传参Ht")
+        ux = ht.squeeze()
+        print(ux.shape, "传参squeeze后的")
+        ux = dp_layer(ux)
+        print(ux.shape,"dp_layer后")
+        ux = self.linear(ux)
+        print(ux.shape)
+        y_pred = self.activation(ux)                #(batch_size, 1) -> (batch_size, 1)
         print(y_pred.shape, "activation 后 y_pred")
         if y is not None:
             return self.loss(y_pred, y)   #预测值和真实值计算损失
