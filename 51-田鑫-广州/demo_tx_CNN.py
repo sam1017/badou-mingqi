@@ -19,19 +19,34 @@ import matplotlib.pyplot as plt
 class TorchModel(nn.Module):
     def __init__(self, vector_dim, sentence_length, vocab):
         super(TorchModel, self).__init__()
+        inchannel, outchannel, kernersize = 1, 256, 3
         self.embedding = nn.Embedding(len(vocab), vector_dim)  # embedding层
-        self.pool = nn.MaxPool1d(sentence_length)  # 池化层
-        self.classify2 = nn.RNN(vector_dim, 128, 2, dropout=0.01)  # RNN循环层
-        self.classify1 = nn.Linear(128, 4)  # 线性层
-        self.activation = torch.sigmoid  # sigmoid归一化函数
+        self.pool = nn.AvgPool2d(kernersize)  # 池化层
+        self.classify2 = nn.Conv2d(inchannel, outchannel, kernersize, bias=False)  # cNN层
+        self.classify1 = nn.Linear(outchannel*6, 4)  # 线性层
+        self.activation = torch.relu  # sigmoid归一化函数
         self.loss = nn.functional.cross_entropy  # loss函数采用交叉熵
+        self.dropout = nn.Dropout(0.001)
 
     # 当输入真实标签，返回loss值；无真实标签，返回预测值
     def forward(self, x, y=None):
+        # print('--4--', x.shape)
         x = self.embedding(x)
-        x, _ = self.classify2(x)
-        x = self.pool(x.transpose(1, 2)).squeeze()
+        # print('--4--', x.shape)
+        x=x.unsqueeze(1)
+        # print('--4--', x.shape)
+        x= self.classify2(x)
+        # print('--4--', x.shape)
+
+        x = self.pool(x.transpose(2, 3)).squeeze()
+        # print('--41--', x.shape)
+        x = self.dropout(x)
+        # print('--42--', x.shape)
+        x=x.view(x.size(0),-1)
+        # print('--43--', x.shape)
         x = self.classify1(x)
+        # print('--44--', x.shape)
+        # x = self.relu(x)
         y_pred = self.activation(x)
         if y is not None:
             return self.loss(y_pred, y.squeeze())  # 预测值和真实值计算损失
@@ -144,7 +159,7 @@ def main():
     plt.legend()
     plt.show()
     # 保存模型
-    torch.save(model.state_dict(), "RNN_model.pth")
+    torch.save(model.state_dict(), "CNN_model.pth")
     # 保存词表
     writer = open("vocab.json", "w", encoding="utf8")
     writer.write(json.dumps(vocab, ensure_ascii=False, indent=2))
@@ -172,5 +187,5 @@ def predict(model_path, vocab_path, input_strings):
 if __name__ == "__main__":
     # main()
     test_strings = ["abvxte", "casdfg", "rqweqg", "nltdww"]
-    predict('RNN_model.pth', "vocab.json", test_strings)
+    predict('CNN_model.pth', "vocab.json", test_strings)
 
