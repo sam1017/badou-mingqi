@@ -48,7 +48,7 @@ def randCent(data, k):
     idxs = np.random.choice(a=m, size=k, replace=False, p=None)
     centroids = []
     for i in idxs:
-        centroids.append([data[i],0,0])
+        centroids.append(data[i])
     return centroids
 
 
@@ -77,7 +77,7 @@ def kmeans(data, k):
 
             for j in range(k):
                 #计算i与每个质心的距离
-                dist = edit_distance(data[i],centroids[j][0])
+                dist = edit_distance(data[i],centroids[j])
                 if dist < minDist:
                     minDist = dist
                     minIndex = j
@@ -89,6 +89,7 @@ def kmeans(data, k):
         for j in range(k):
             sum_all = 0
             r = 0 #每个类别样本个数
+            avg_dist = 0
             for i in range(m):
                 if subCenter[i, 0] == j:
                     sum_all += subCenter[i,1]
@@ -104,26 +105,44 @@ def kmeans(data, k):
                     if subCenter[i,1] >= avg_dist and subCenter[i,1] < tmp_dist:
                         tmp_dist = subCenter[i,1]
                         idx = i
-            centroids[j] = [data[idx],j,avg_dist]
-            #centroids[j] = data[idx]
+            #centroids[j] = [data[idx],j,avg_dist]
+            centroids[j] = data[idx]
     return centroids,subCenter
+
+def calc_avg_dist(subCenter,k,m):
+    avg_dists = []
+    #计算平局距离
+    for j in range(k):
+        sum_all = 0
+        r = 0 #每个类别样本个数
+        avg_dist = 0
+        for i in range(m):
+            if subCenter[i, 0] == j:
+                sum_all += subCenter[i,1]
+                r += 1
+        avg_dist = round(sum_all / r)
+        avg_item = [j,avg_dist]
+        avg_dists.append(avg_item)
+    return avg_dists
+
 
 if __name__ == '__main__':
     path = r'./titles.txt'
     sentences = load_sentence(path)
     #print(sentences[:10])
     #centroids = randCent(sentences,4)
-    k = int(math.sqrt(len(sentences)))
+    m = len(sentences)
+    k = int(math.sqrt(m))
     print("类别数量：",k)
     #k=2
     centroids,subCenter = kmeans(sentences, k)
-    print(centroids)
-    orders = sorted(centroids,key=lambda x:x[2])#根据平均距离排序
-
+    acg_dists = calc_avg_dist(subCenter,k,m)
+    orders = sorted(acg_dists,key=lambda x:x[1])#根据平均距离排序
+    print(orders)
     sentence_label_dict = defaultdict(list)
     for sentence,label in zip(sentences,subCenter[:,0]):
         sentence_label_dict[label].append(sentence)
-    for centro,label,avg_dist in orders:
+    for label,avg_dist in orders:
         print("cluster %s :" % label)
         sen = sentence_label_dict[label]
         for i in range(min(10, len(sen))):
